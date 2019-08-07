@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="item_padding">1dp</dimen>
+
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_large">15dp</dimen>
+
+    <dimen name="font_small">12sp</dimen>
+    <dimen name="font_medium">16sp</dimen>
+</resources>

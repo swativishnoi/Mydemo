@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:id="@+id/lnrClick"
+    android:padding="@dimen/dim_1"
+    android:layout_margin="@dimen/dim_5"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/smallImageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
+
+</RelativeLayout>

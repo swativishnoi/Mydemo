@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ImagePickerEditor</string>
+    <string name="error_try_again">Please try again</string>
+</resources>

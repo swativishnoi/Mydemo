@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f40b2c</color>
+    <color name="colorPrimaryDark">#f40b2c</color>
+    <color name="colorAccent">#f40b2c</color>
+    <color name="all_chat_theme_color">#f40b2c</color>
+
+    <color name="all_chat_theme_color_dark">#a9205d</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#9E9E9E</color>
+    <color name="black">#000000</color>
+    <color name="black_alpha_50">#80000000</color>
+
+</resources>

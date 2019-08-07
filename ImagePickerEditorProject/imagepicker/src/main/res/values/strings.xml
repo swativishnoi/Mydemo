@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">ImagePicker</string>
+
+    <string name="ok">OK</string>
+    <string name="send">SEND</string>
+    <string name="image_directory">Camera</string>
+    <!--<string name="image">Select Images</string>-->
+    <string name="title_folder">Folder</string>
+    <string name="title_select_image">Tap to select images</string>
+    <string name="atleast_one_image">Please select atleast one image</string>
+    <string name="selected">%d selected</string>
+
+    <string name="error_create_image_file">Failed to create image file</string>
+    <string name="error_no_camera">No camera found</string>
+
+    <string name="msg_empty_images">No images found</string>
+    <string name="msg_no_write_external_permission">Please grant storage permission to select images</string>
+    <string name="msg_no_camera_permission">Please grant camera permission to capture image</string>
+    <string name="msg_limit_images">Image selection limit</string>
+    <string name="select_images">Select Images</string>
+
+</resources>
