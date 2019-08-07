@@ -1,4 +1,4 @@
-package com.umahroaps.umahro.networkCalls;
+package com.myPack.networkCalls;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
