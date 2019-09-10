@@ -1,0 +1,289 @@
+package com.tuts.retrofittutorial.activity;
+
+import android.app.ProgressDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
+
+import com.tuts.retrofittutorial.R;
+import com.tuts.retrofittutorial.adapter.CustomAdapter;
+import com.tuts.retrofittutorial.model.RetroPhoto;
+import com.tuts.retrofittutorial.network.GetDataService;
+import com.tuts.retrofittutorial.network.RetrofitClientInstance;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity {
+
+    private CustomAdapter adapter;
+    private RecyclerView recyclerView;
+    ProgressDialog progressDoalog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        progressDoalog = new ProgressDialog(MainActivity.this);
+        progressDoalog.setMessage("Loading....");
+        progressDoalog.show();
+
+        /*Create handle for the RetrofitInstance interface*/
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+
+        Call<List<RetroPhoto>> call = service.getAllPhotos();
+        call.enqueue(new Callback<List<RetroPhoto>>() {
+
+            @Override
+            public void onResponse(Call<List<RetroPhoto>> call, Response<List<RetroPhoto>> response) {
+                progressDoalog.dismiss();
+                generateDataList(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<RetroPhoto>> call, Throwable t) {
+                progressDoalog.dismiss();
+                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*Method to generate List of data using RecyclerView with custom adapter*/
+    private void generateDataList(List<RetroPhoto> photoList) {
+        recyclerView = findViewById(R.id.customRecyclerView);
+        adapter = new CustomAdapter(this,photoList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+    }
+
+}
+
+
+package com.tuts.retrofittutorial.network;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+/**
+ * Created by praka on 12/24/2017.
+ */
+
+public class RetrofitClientInstance {
+
+    private static Retrofit retrofit;
+    private static final String BASE_URL = "https://jsonplaceholder.typicode.com";
+
+    public static Retrofit getRetrofitInstance() {
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+    }
+}
+package com.tuts.retrofittutorial.network;
+
+import com.tuts.retrofittutorial.model.RetroPhoto;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+
+/**
+ * Created by praka on 12/24/2017.
+ */
+
+public interface GetDataService {
+
+    @GET("/photos")
+    Call<List<RetroPhoto>> getAllPhotos();
+}
+package com.tuts.retrofittutorial.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
+import com.tuts.retrofittutorial.R;
+import com.tuts.retrofittutorial.model.RetroPhoto;
+
+import java.util.List;
+
+/**
+ * Created by praka on 12/24/2017.
+ */
+
+public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
+
+    private List<RetroPhoto> dataList;
+    private Context context;
+
+    public CustomAdapter(Context context,List<RetroPhoto> dataList){
+        this.context = context;
+        this.dataList = dataList;
+    }
+
+    class CustomViewHolder extends RecyclerView.ViewHolder {
+
+        public final View mView;
+
+        TextView txtTitle;
+        private ImageView coverImage;
+
+        CustomViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+
+            txtTitle = mView.findViewById(R.id.title);
+            coverImage = mView.findViewById(R.id.coverImage);
+        }
+    }
+
+    @Override
+    public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View view = layoutInflater.inflate(R.layout.custom_row, parent, false);
+        return new CustomViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(CustomViewHolder holder, int position) {
+        holder.txtTitle.setText(dataList.get(position).getTitle());
+
+        Picasso.Builder builder = new Picasso.Builder(context);
+        builder.downloader(new OkHttp3Downloader(context));
+        builder.build().load(dataList.get(position).getThumbnailUrl())
+                .placeholder((R.drawable.ic_launcher_background))
+                .error(R.drawable.ic_launcher_background)
+                .into(holder.coverImage);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+}
+package com.tuts.retrofittutorial.model;
+
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * Created by praka on 12/24/2017.
+ */
+
+public class RetroPhoto {
+
+    @SerializedName("albumId")
+    private Integer albumId;
+    @SerializedName("id")
+    private Integer id;
+    @SerializedName("title")
+    private String title;
+    @SerializedName("url")
+    private String url;
+    @SerializedName("thumbnailUrl")
+    private String thumbnailUrl;
+
+    public RetroPhoto(Integer albumId, Integer id, String title, String url, String thumbnailUrl) {
+        this.albumId = albumId;
+        this.id = id;
+        this.title = title;
+        this.url = url;
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Integer getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(Integer albumId) {
+        this.albumId = albumId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+}
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.tuts.retrofittutorial"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile "com.android.support:cardview-v7:26.1.0"
+
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
